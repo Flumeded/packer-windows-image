@@ -1,4 +1,4 @@
-### Homelab Windows Golden Image
+## Homelab Windows Golden Image
 
 This is a packer config which prepares a Windows image for further deployment in my Homelab.
 
@@ -10,7 +10,7 @@ It covers some basic things like:
 * Activates Windows
 * Makes various QOL Windows changes
 
-## Prerequisites
+### Prerequisites
 
 You need to supply two files for further configuration:
 
@@ -21,9 +21,9 @@ Place it on the datastore.
 * Windows Server 2022 ISO  
 Place it on the datastore as well.
 
-## How to use
+### How to use
 
-1) Fill and rename (remove ``.empty``) `variables.pkrvars.hcl.empty` variables file.  
+1) Fill and rename (remove ``.empty`` part) `variables.pkrvars.hcl.empty` variables file.  
 You can reference [this article](https://developer.hashicorp.com/packer/integrations/hashicorp/vsphere/latest/components/builder/vsphere-iso#hardware-configuration) for more information.
 2) Find and replace `#REPLACE_ME#` tags in the `setup\autounattend.xml`
 3) Run packer with:
