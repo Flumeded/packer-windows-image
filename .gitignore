@@ -1,0 +1,12 @@
+# Ignore local variable files
+variables.pkrvars.hcl
+
+# Ignore sensitive data files
+secrets.json
+
+# Ignore temporary or build-specific files
+packer_cache/
+*.log
+
+# Activation script from MAS repo
+setup/MAS_AIO.cmd
