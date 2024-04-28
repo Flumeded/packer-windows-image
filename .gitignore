@@ -10,3 +10,6 @@ packer_cache/
 
 # Activation script from MAS repo
 setup/MAS_AIO.cmd
+
+#Ignoring it so password won't leak
+setup/autounattend.xml

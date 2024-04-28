@@ -1,0 +1,105 @@
+---
+- name: Populate configuration with ansible
+  hosts: localhost
+  gather_facts: false
+  vars:
+    timezone: Caucasus Standard Time
+    windows_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61396530343961393237386434376164613961613031346263383539326333393462653131366361
+          6639653165303031663338393334616166663266616264650a613961643436323037316562333964
+          31616132373037643363656230633032396136353866313832386664363161353531636339363039
+          6261623836356339330a643638343931643334663734646135613931663437376564373665376636
+          66343333373431356532656663373463316337326662326534396235613334356264
+    winkey: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35666633626335356335333132616138666365353430333865313661636239613139626237346435
+          3938376461623230623564336333383634646264396131390a386564336638303065363433353437
+          65636635306261396638663035313363636665616532636639333434316239653430303963353462
+          3538666434333765370a393864646437383265356533666661303461373266326536303034646461
+          34316334353761326235383434353934623066393861393937613132366230303432
+    share_path: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              39323533613463623464333764396635663439303134336138643639366262386439313736393638
+              3936396464333032653066663866613637633035646566390a313835396631343032613638656563
+              31613235626132623566666234303937336339666637313034376535666131353362326261326535
+              3834313433333565380a616435663461643761336331666436303735353662393439353561653934
+              37376163663335363161383164623563616366353135653661383863633664616635
+    share_password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              39363238366465356237336662336632383461663266343532303163333636616264613666373066
+              3133323964313930343266623734363034373332366234360a663961333564363638393664316363
+              63643035323530333930363535316165373937393366333066316531363864656262303532613238
+              3131393635633337300a386432623566303164643863386635356133653233643432613963386339
+              33636632383266303631363037326366663133356633316463383336343865356432
+    share_user: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              33653561376666616632356136393031353531363930306263346635376636626430656435383161
+              3464336463613939326535626464363031356238343339370a393362396561343837613237663833
+              36613166663735306261663564626465633765373034656435613935363836623965356430643263
+              6465363131393333320a386631633431376564313430363764373834313437326230363339663930
+              3965
+  tasks:
+### We need to fetch the latest MAS AIO version
+### The name of cmd changes to avoid AV detection
+    - name: Fetch GitHub repository contents for Microsoft Activation Scripts
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/massgravel/Microsoft-Activation-Scripts/contents/MAS/All-In-One-Version
+        method: GET
+        return_content: true
+        headers:
+          Accept: application/vnd.github.v3+json
+      register: github_content
+
+    - name: Find MAS AIO CMD file with specific CRC32 in filename
+      ansible.builtin.set_fact:
+        mas_aio_cmd_file_url: "{{ item.download_url }}"
+      loop: "{{ github_content.json }}"
+      when: "'MAS_AIO' in item.name and item.name.endswith('.cmd')"
+
+    - name: Download the MAS AIO CMD script from GitHub
+      ansible.builtin.get_url:
+        url: "{{ mas_aio_cmd_file_url }}"
+        dest: "setup/MAS_AIO.cmd"
+        force: true
+        mode: '0755'
+      when: mas_aio_cmd_file_url is defined
+
+    - name: Decrypt the encrypted file temporarily
+      ansible.builtin.copy:
+        src: "variables.pkrvars.hcl.encrypted"
+        dest: "variables.pkrvars.hcl"
+        mode: 'preserve'
+      no_log: true
+
+    - name: Replace Windows Activation Key placeholder in autounattend.xml
+      ansible.builtin.replace:
+        path: "setup/autounattend.xml"
+        regexp: '#Replace_Winkey'
+        replace: "{{ winkey }}"
+
+
+    - name: Replace timezone placeholder in autounattend.xml
+      ansible.builtin.replace:
+        path: "setup/autounattend.xml"
+        regexp: '#Replace_Timezone'
+        replace: "{{ timezone }}"
+
+    - name: Replace password placeholder in autounattend.xml
+      ansible.builtin.replace:
+        path: "setup/autounattend.xml"
+        regexp: '#Replace_WinPassword'
+        replace: "{{ windows_passowrd }}"
+
+    - name: Uncomment the PowerShell script block
+      ansible.builtin.replace:
+        path: "setup/InitialSetup.ps1"
+        regexp: '^# (.*)'
+        replace: '\1'
+
+    - name: Template the share values into the file
+      ansible.builtin.template:
+        src: "setup/InitialSetup.ps1"
+        dest: "setup/InitialSetup.ps1"
+        mode: 'preserve'
+
