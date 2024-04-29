@@ -2,12 +2,11 @@
 #This block will be uncommented and pupulatedby ansible, 
 #it is not really designed to be used as is
 
-# $NetworkPath = "{{ share_path }}"  # Specify the network path
-# $DriveLetter = "Z:"             # Specify the drive letter to assign to the network share
-# $Username = "{{ share_user }}"   # Specify the username
-# $Password = "{{ share_password }}"          # Specify the password
-# $Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, ($Password | ConvertTo-SecureString -AsPlainText -Force)
+#Store the credentials securely
+# Invoke-Expression "cmdkey /add:{{ share_path | regex_replace('\\\\(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}).*', '\\1') }} /user:{{ share_user }} /pass:{{ share_password }}"
 
 #Map the network drive
-# New-PSDrive -Name ($DriveLetter -replace ':', '') -PSProvider FileSystem -Root $NetworkPath -Credential $Credential -Persist
-# Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+# Invoke-Expression "net use Z: {{ share_path }} /persistent:yes"
+
+#Install Chocolatey
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
