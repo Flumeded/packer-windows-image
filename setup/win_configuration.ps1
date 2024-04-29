@@ -4,7 +4,7 @@
 
 # $NetworkPath = "{{ share_path }}"  # Specify the network path
 # $DriveLetter = "Z:"             # Specify the drive letter to assign to the network share
-# $Username = "{{ share-user }}"   # Specify the username
+# $Username = "{{ share_user }}"   # Specify the username
 # $Password = "{{ share_password }}"          # Specify the password
 # $Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, ($Password | ConvertTo-SecureString -AsPlainText -Force)
 
