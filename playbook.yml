@@ -89,17 +89,16 @@
       ansible.builtin.replace:
         path: "setup/autounattend.xml"
         regexp: '#Replace_WinPassword'
-        replace: "{{ windows_passowrd }}"
+        replace: "{{ windows_password }}"
 
     - name: Uncomment the PowerShell script block
       ansible.builtin.replace:
-        path: "setup/InitialSetup.ps1"
+        path: "setup/win_configuration.ps1"
         regexp: '^# (.*)'
         replace: '\1'
 
     - name: Template the share values into the file
       ansible.builtin.template:
-        src: "setup/InitialSetup.ps1"
-        dest: "setup/InitialSetup.ps1"
+        src: "setup/win_configuration.ps1"
+        dest: "setup/win_configuration.ps1"
         mode: 'preserve'
-
