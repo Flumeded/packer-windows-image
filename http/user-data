@@ -1,0 +1,32 @@
+#cloud-config
+autoinstall:
+    version: 1
+    early-commands:
+        # workaround to stop ssh for packer as it thinks it timed out
+        - sudo systemctl stop ssh
+    locale: en_US
+    keyboard:
+        layout: en
+        variant: us
+    packages: [open-vm-tools, openssh-server, curl, vim, zip, unzip, cloud-init]
+    network:
+        network:
+            version: 2
+            ethernets:
+                ens192:
+                    dhcp4: true
+    identity:
+        hostname: ubuntu-golden-image
+        username: ubuntu-admin
+        password: "#Replace_UbuntuPassword"
+    ssh:
+        install-server: yes
+        allow-pw: yes
+        authorized-keys:
+            - #Replace_SshKey
+    storage:
+        layout:
+            name: direct
+    late-commands:
+        - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu-admin
+        - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/ubuntu-admin

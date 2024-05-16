@@ -30,7 +30,7 @@ packer plugins install github.com/hashicorp/vsphere
 ```
 4) Run packer with:
 ```bash
-packer build -var-file=variables.pkrvars.hcl WinGoldeImange.pkr.hcl
+packer build -var-file=variables.pkrvars.hcl WinGoldenImage.pkr.hcl
 ```
 ### Extra
 There is a small Ansible Playbook available for quick repository preparation for use in production.  
