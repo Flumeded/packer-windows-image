@@ -110,7 +110,7 @@
 
     - name: Replace password placeholder in autounattend.xml
       ansible.builtin.replace:
-        path: "http/autounattend.xml"
+        path: "setup/autounattend.xml"
         regexp: '#Replace_WinPassword'
         replace: "{{ windows_password }}"
 

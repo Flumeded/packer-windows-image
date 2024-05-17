@@ -6,8 +6,7 @@ autoinstall:
         - sudo systemctl stop ssh
     locale: en_US
     keyboard:
-        layout: en
-        variant: us
+        layout: us
     packages: [open-vm-tools, openssh-server, curl, vim, zip, unzip, cloud-init]
     network:
         network:
