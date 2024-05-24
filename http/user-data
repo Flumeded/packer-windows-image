@@ -27,5 +27,5 @@ autoinstall:
         layout:
             name: direct
     late-commands:
-        - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu-admin
+        - echo 'ubuntu-admin ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu-admin
         - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/ubuntu-admin
